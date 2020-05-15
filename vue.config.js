@@ -71,7 +71,6 @@ module.exports = {
   chainWebpack: () => {
 
   },
-
   // 配置 webpack-dev-server 行为。
   //     devServer: {
   //         open: process.platform === 'darwin',

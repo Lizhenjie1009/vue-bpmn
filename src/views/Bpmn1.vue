@@ -4,18 +4,7 @@
     <div id="js-properties-panel" class="panel"></div>
     <ul class="buttons">
       <li>
-        <el-upload
-          class="upload-demo"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          multiple
-          :limit="3"
-          :on-exceed="handleExceed"
-          :file-list="fileList">
-          <el-button size="small" type="primary">点击上传</el-button>
-        </el-upload>
+        <input type="file" @change="uploadBpmn" id="btn_file">
       </li>
       <li>下载</li>
       <li>
@@ -36,6 +25,7 @@ import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camu
 import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
 
 import customTranslate from '../utils/customTranslate/customTranslate'
+import axios from 'axios'
  
 export default {
   data () {
@@ -55,21 +45,16 @@ export default {
     }
   },
   methods: {
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
+    async uploadBpmn(e) {
+      var file = document.getElementById('btn_file').files[0];
+      var URL = window.URL || window.webkitURL;
+      var imgURL = URL.createObjectURL(file);
+      // 发送请求
+      let xmlDoc = null
+      this.createNewDiagram(xmlDoc)
+      console.log(file, xmlDoc)
     },
-    handlePreview(file) {
-      console.log(file.raw);
-    },
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
-    },
-
-    createNewDiagram () {
-      
+    createNewDiagram (xmlDoc) {
       const bpmnXmlStr = '<?xml version="1.0" encoding="UTF-8"?>\n' +
         '<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn">\n' +
         '  <bpmn2:process id="Process_1" isExecutable="false">\n' +
@@ -83,8 +68,52 @@ export default {
         '    </bpmndi:BPMNPlane>\n' +
         '  </bpmndi:BPMNDiagram>\n' +
         '</bpmn2:definitions>'
+//       const bpmnXmlStr = `<?xml version="1.0" encoding="UTF-8"?>
+// <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+//   <bpmn2:process id="Process_1" isExecutable="false">
+//     <bpmn2:startEvent id="StartEvent_1">
+//       <bpmn2:outgoing>Flow_1tphzzl</bpmn2:outgoing>
+//     </bpmn2:startEvent>
+//     <bpmn2:exclusiveGateway id="Gateway_0gbw9f0">
+//       <bpmn2:incoming>Flow_1tphzzl</bpmn2:incoming>
+//       <bpmn2:outgoing>Flow_04zmtgd</bpmn2:outgoing>
+//     </bpmn2:exclusiveGateway>
+//     <bpmn2:sequenceFlow id="Flow_1tphzzl" sourceRef="StartEvent_1" targetRef="Gateway_0gbw9f0" />
+//     <bpmn2:task id="Activity_1qczkto">
+//       <bpmn2:incoming>Flow_04zmtgd</bpmn2:incoming>
+//     </bpmn2:task>
+//     <bpmn2:sequenceFlow id="Flow_04zmtgd" sourceRef="Gateway_0gbw9f0" targetRef="Activity_1qczkto" />
+//   </bpmn2:process>
+//   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+//     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+//       <bpmndi:BPMNEdge id="Flow_1tphzzl_di" bpmnElement="Flow_1tphzzl">
+//         <di:waypoint x="448" y="180" />
+//         <di:waypoint x="545" y="180" />
+//       </bpmndi:BPMNEdge>
+//       <bpmndi:BPMNEdge id="Flow_04zmtgd_di" bpmnElement="Flow_04zmtgd">
+//         <di:waypoint x="570" y="205" />
+//         <di:waypoint x="570" y="280" />
+//       </bpmndi:BPMNEdge>
+//       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+//         <dc:Bounds x="412" y="162" width="36" height="36" />
+//       </bpmndi:BPMNShape>
+//       <bpmndi:BPMNShape id="Gateway_0gbw9f0_di" bpmnElement="Gateway_0gbw9f0" isMarkerVisible="true">
+//         <dc:Bounds x="545" y="155" width="50" height="50" />
+//       </bpmndi:BPMNShape>
+//       <bpmndi:BPMNShape id="Activity_1qczkto_di" bpmnElement="Activity_1qczkto">
+//         <dc:Bounds x="520" y="280" width="100" height="80" />
+//       </bpmndi:BPMNShape>
+//     </bpmndi:BPMNPlane>
+//   </bpmndi:BPMNDiagram>
+// </bpmn2:definitions>`
+      let bpmnDoc;
+      if (typeof xmlDoc == 'string') {
+        bpmnDoc = xmlDoc
+      } else {
+        bpmnDoc = bpmnXmlStr
+      }
       // 将字符串转换成图显示出来
-      this.bpmnModeler.importXML(bpmnXmlStr, function (err) {
+      this.bpmnModeler.importXML(bpmnDoc, function (err) {
         if (err) {
           console.error(err)
         }
@@ -95,11 +124,11 @@ export default {
       // 把传入的done再传给bpmn原型的saveSVG函数调用
       this.bpmnModeler.saveSVG(done)
     },
-    // 下载为SVG格式,done是个函数，调用的时候传入的
+    // 下载为bpmn格式,done是个函数，调用的时候传入的
     saveDiagram (done) {
       // 把传入的done再传给bpmn原型的saveXML函数调用
       this.bpmnModeler.saveXML({ format: true }, function (err, xml) {
-        console.log(xml)
+        // console.log(xml) 发送ajax请求
         done(err, xml)
       })
     },
