@@ -50,9 +50,9 @@ export default {
       var URL = window.URL || window.webkitURL;
       var imgURL = URL.createObjectURL(file);
       // 发送请求
-      let xmlDoc = null
-      this.createNewDiagram(xmlDoc)
-      console.log(file, xmlDoc)
+      axios.get(imgURL).then((response) => {
+        this.createNewDiagram(response.data)
+      });
     },
     createNewDiagram (xmlDoc) {
       const bpmnXmlStr = '<?xml version="1.0" encoding="UTF-8"?>\n' +

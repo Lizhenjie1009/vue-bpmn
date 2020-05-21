@@ -10,5 +10,10 @@ export default new Router({
       name: 'bpmn',
       component: () => import('./views/Bpmn1')
     },
+    {
+      path: '/home',
+      name: 'home',
+      component: () => import('./views/Home')
+    }
   ]
 })
